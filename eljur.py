@@ -5,7 +5,7 @@ import os
 import time
 
 BASE = "https://eljur.gospmr.org"
-# logo (тут скопируйте лого и просто вставте вместо \n            logologo\n            logologo)
+# logo
 logo = r"""
 ███████╗ ██╗      ██████╗ ██████╗   █████╗  ██████╗ ██╗  ██╗
 ██╔════╝ ██║     ██╔════╝ ██╔══██╗ ██╔══██╗ ██╔════╝ ██║ ██╔╝
@@ -37,7 +37,7 @@ def get_soup(url):
     r.encoding = "utf-8"
     return BeautifulSoup(r.text, "html.parser")
     
-# функция регистрации элжура в ссесии (надо оптимизировать)
+# функция регистрации элжура в ссесии (надо проверить работу)
 def reg(login_val, password_val):
     data = {
         "username": login_val,
@@ -45,26 +45,15 @@ def reg(login_val, password_val):
         "return_uri": "/",
     }
     try:
-    	response = session.post(f"{BASE}/ajaxauthorize", data=data)
-    except Exception as e:
-    	return e
-    try:
-        result = response.json()
-        if result == {'actions': [], 'errors': [{'field': None, 'text': 'Неверный логин или пароль'}], 'result': False}:
+        response = session.post(f"{BASE}/ajaxauthorize", data=data)
+        if response.json == {'actions': [], 'errors': [{'field': None, 'text': 'Неверный логин или пароль'}], 'result': False}:
             return "Неверный логин или пароль"
-        if "errors" in result and result["errors"]:
-            print("\nОшибка входа:")
-            for err in result["errors"]:
-                print(f"  - {err.get('text', err)}")
-        elif "actions" in result:
-            for action in result["actions"]:
-                if action.get("type") == "redirect" and action.get("url"):
-                    redirect_url = action["url"]
-                    if not redirect_url.startswith("http"):
-                        redirect_url = BASE + redirect_url
-                    return "ok"
+        elif "result: true" in response.json():
+            return "ok"
+        else:
+            return response.json
     except Exception as e:
-        return response.text
+        return e
 
 # функция создания календаря
 def newcal(title="Новое событие", canEdit=True, description="Описание события", calendar_id="1220", datetime_start="2026-10-31 09:00:00", datetime_end="2026-10-31 10:00:00", presence="at_will", place_type="school", place_value="", status="published"):
@@ -145,4 +134,3 @@ def menu():
 
 # вызов функции интерфейса, начало работы
 login_password()
-
