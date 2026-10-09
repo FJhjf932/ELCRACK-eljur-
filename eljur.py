@@ -5,9 +5,11 @@ import os
 import time
 
 BASE = "https://eljur.gospmr.org"
+# logo (тут скопируйте лого и просто вставте вместо \n            logologo\n            logologo)
 logo = """\n            logologo\n            logologo"""
 
 session = requests.Session()
+# функция измены ссесии
 def ses_update():
     session.headers.update({
         "User-Agent": (
@@ -22,11 +24,13 @@ def ses_update():
     })
 ses_update()
 
+# функция получение html от url
 def get_soup(url):
     r = session.get(url)
     r.encoding = "utf-8"
     return BeautifulSoup(r.text, "html.parser")
-
+    
+# функция регистрации элжура в ссесии (надо оптимизировать)
 def reg(login_val, password_val):
     data = {
         "username": login_val,
@@ -55,6 +59,7 @@ def reg(login_val, password_val):
     except Exception as e:
         return response.text
 
+# функция создания календаря
 def newcal(title="Новое событие", canEdit=True, description="Описание события", calendar_id="1220", datetime_start="2026-10-31 09:00:00", datetime_end="2026-10-31 10:00:00", presence="at_will", place_type="school", place_value="", status="published"):
     data = {
         "CalendarEvent": {
@@ -73,6 +78,7 @@ def newcal(title="Новое событие", canEdit=True, description="Опи�
     response = session.post(f"{BASE}/journal-calendar-api-action/type.event/action.create", json=data)
     return response.text
 
+# функция отправки сообщения
 def go_mess(id_in, description, tema, csrf):
     data = {
         "subject": tema,
@@ -85,51 +91,51 @@ def go_mess(id_in, description, tema, csrf):
     response = session.post(f"{BASE}/journal-messages-send-action", json=data)
     print(response.text)
 
+# функция получение календаря по его счёту
 def razved_cal(iddd):
     return session.get(f"https://eljur.gospmr.org/journal-calendar-api-action/type.event/action.one?id={iddd}").text.encode('utf-8').decode('unicode_escape')
 
+# функция интерфейса для введения логина и пароля
+def login_password():
+	while True:
+		print(logo)
+		print("\n        ВВЕДИТЕ ЛОГИН\n")
+		login = input("login>>  ")
+		password = input("password>>  ")
+		pp = reg(login, password)
+		if pp == "ok":
+			flag = "menu"
+			break
+		elif pp == "Неверный логин или пароль":
+			print("\n  Неверный логин или пароль")
+			time.sleep(2)
+			os.system("clear")
+			continue
+		else:
+			print(f"\n  ошибка  {pp}")
+		time.sleep(2)
+		os.system("clear")
+	os.system("clear")
+	menu()
 
-def login_password():
+# функция интерфейса меню (не доделана)
+def menu():
 	while True:
 		print(logo)
-		print("\n        ВВЕДИТЕ ЛОГИН\n")
-		login = input("login>>  ")
-		password = input("password>>  ")
-		pp = reg(login, password)
-		if pp == "ok":
-			flag = "menu"
+		print("\n        ВВЕДИТЕ НОМЕР ДЕЙСТВИЯ\n\n  1)message boom\n  2)scan calendar\n  3)calendar boom")
+		go = input(" >>   ")
+		if go == "1":
+			os.system("clear")
 			break
-		elif pp == "Неверный логин или пароль":
-			print("\n  Неверный логин или пароль")
+		elif go == "2":
+			os.system("clear")
+			break
+		else:
+			print(f"\n         ВВЕДИТЕ КОРЕКТНЫЙ НОМЕР")
 			time.sleep(2)
 			os.system("clear")
 			continue
-		else:
-			print(f"\n  ошибка  {pp}")
-		time.sleep(2)
-		os.system("clear")
-	os.system("clear")
-	
-def login_password():
-	while True:
-		print(logo)
-		print("\n        ВВЕДИТЕ ЛОГИН\n")
-		login = input("login>>  ")
-		password = input("password>>  ")
-		pp = reg(login, password)
-		if pp == "ok":
-			flag = "menu"
-			break
-		elif pp == "Неверный логин или пароль":
-			print("\n  Неверный логин или пароль")
-			time.sleep(2)
-			os.system("clear")
-			continue
-		else:
-			print(f"\n  ошибка  {pp}")
-		time.sleep(2)
-		os.system("clear")
-	os.system("clear")
-	
+
+# вызов функции интерфейса, начало работы
 login_password()
 
