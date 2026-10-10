@@ -38,7 +38,6 @@ def ses_update():
 
 ses_update()
 
-
 # функция получение html от url
 def get_soup(url):
     r = session.get(url)
@@ -46,7 +45,7 @@ def get_soup(url):
     return BeautifulSoup(r.text, "html.parser")
 
 
-# функция регистрации элжура в ссесии
+# функция регистрации элжура в ссесии (надо проверить работу)
 def reg(login_val, password_val):
     data = {
         "username": login_val,
@@ -128,8 +127,8 @@ def login_password():
         else:
             print(f"\n  ошибка  {pp}")
         time.sleep(2)
-        os.system("clear")
-    os.system("clear")
+        os.system('cls' if os.name == 'nt' else 'clear')
+    os.system('cls' if os.name == 'nt' else 'clear')
     menu()
 
 
@@ -140,15 +139,15 @@ def menu():
         print("\n                  ВВЕДИТЕ НОМЕР ДЕЙСТВИЯ\n\n  1)message boom\n  2)scan calendar\n  3)calendar boom")
         go = input(" >>   ")
         if go == "1":
-            os.system("clear")
+            os.system('cls' if os.name == 'nt' else 'clear')
             message_go()
         elif go == "2":
-            os.system("clear")
+            os.system('cls' if os.name == 'nt' else 'clear')
             break
         else:
             print(f"\n         ВВЕДИТЕ КОРЕКТНЫЙ НОМЕР")
             time.sleep(2)
-            os.system("clear")
+            os.system('cls' if os.name == 'nt' else 'clear')
             continue
 
 
@@ -170,7 +169,7 @@ def message_go():
         for i in id:
             print(go_mess([ id[str(i)] ], desc, tit, csrf))
     time.sleep(2)
-    os.system("clear")
+    os.system('cls' if os.name == 'nt' else 'clear')
     menu()
 
 
