@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import random
 import os
 import time
+import json
 
 BASE = "https://eljur.gospmr.org"
 # logo
@@ -17,9 +18,9 @@ logo = r"""
 
 login = ""
 password = ""
+domain = ""
 
 session = requests.Session()
-
 
 # функция измены ссесии
 def ses_update():
@@ -47,6 +48,7 @@ def get_soup(url):
 
 # функция регистрации элжура в ссесии (надо проверить работу)
 def reg(login_val, password_val):
+    global domain
     data = {
         "username": login_val,
         "password": password_val,
@@ -58,11 +60,13 @@ def reg(login_val, password_val):
                              'result': False}:
             return "Неверный логин или пароль"
         elif r""""result":true""" in str(response.text):
+            domain = json.loads(str(json.loads(str(response.text))["actions"]).replace("[", "").replace("]", "").replace("'", '"'))["url"].replace(f"/?user={login_val}&domain=", "")
             return "ok"
         else:
             return response.text
     except Exception as e:
         return e
+
 
 
 # функция создания календаря
@@ -134,14 +138,24 @@ def login_password():
 
 # функция интерфейса меню (не доделана)
 def menu():
+    global domain
     while True:
         print(logo)
-        print("\n                  ВВЕДИТЕ НОМЕР ДЕЙСТВИЯ\n\n  1)message boom\n  2)scan calendar\n  3)calendar boom")
+        print(f"\n                  ВВЕДИТЕ НОМЕР ДЕЙСТВИЯ      domain={domain}\n\n  1)message boom\n  2)scan calendar\n  3)calendar boom\n  4)brute online\n  99)exit")
         go = input(" >>   ")
         if go == "1":
             os.system('cls' if os.name == 'nt' else 'clear')
             message_go()
         elif go == "2":
+            os.system('cls' if os.name == 'nt' else 'clear')
+            break
+        elif go == "3":
+            os.system('cls' if os.name == 'nt' else 'clear')
+            break
+        elif go == "4":
+            os.system('cls' if os.name == 'nt' else 'clear')
+            break
+        elif go == "99":
             os.system('cls' if os.name == 'nt' else 'clear')
             break
         else:
