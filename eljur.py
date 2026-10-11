@@ -148,7 +148,7 @@ def menu():
             message_go()
         elif go == "2":
             os.system('cls' if os.name == 'nt' else 'clear')
-            break
+            calendar_scan()
         elif go == "3":
             os.system('cls' if os.name == 'nt' else 'clear')
             break
@@ -169,11 +169,11 @@ def menu():
 def message_go():
     print(logo)
     print("\n                  Вы выбрали message boom\n")
+    reg(login, password)
     n = int(input("n>>  "))
     id = {}
     for i in range(1, n + 1):
-        id[str(n)] = str(input(f"id_{n}>>  "))
-    pp = reg(login, password)
+        id[str(n)] = str(input(f"id_{i}>>  "))
     desc = input("description>>  ")
     tit = input("title>>  ")
     nn = int(input("N>>  "))
@@ -181,11 +181,36 @@ def message_go():
     csrf = dd.find("input", id="csrf")["value"]
     for i in range(1, nn + 1):
         for i in id:
-            print(go_mess([ id[str(i)] ], desc, tit, csrf))
+            go_mess([id[str(i)]], desc, tit, csrf)
+            print(f"Сообщение {nn} для {id[str(i)]} было отправленно")
+    print("Готово!")
     time.sleep(2)
     os.system('cls' if os.name == 'nt' else 'clear')
     menu()
 
+# функция интерфейса для сканирование календарей
+def calendar_scan():
+    print(logo)
+    print("\n                  Вы выбрали scan calendar\n")
+    min = int(input("min>>  "))
+    max = int(input("max>>  "))
+    log_file = input("log_file>>  ")
+    reg(login, password)
+    with open(log_file, "w", encoding="utf-8", errors="ignore") as f:
+        while min <= max:
+            razvedjson = json.loads(razved_cal(min))
+            if razvedjson != {'result': False, 'error': 'Событие не найдено', 'formErrors': None}:
+                razvedjson = razvedjson["result"][str(min)]
+                f.write(f"{min}:\nheader: {razvedjson["header"]}\ntitle: {razvedjson["title"]}\naudience: {razvedjson["audience"]}\ncorner: {razvedjson["corner"]}\ncolor: {razvedjson["color"]}\ncanEdit: {razvedjson["features"]["canEdit"]}\nlabel: {razvedjson["label"]}\ncalendar_id: {razvedjson["payload"]["calendar_id"]}\ntitle_payload: {razvedjson["payload"]["title"]}\ndescription: {razvedjson["payload"]["description"]}\nowner_uid: {razvedjson["payload"]["owner_uid"]}\nstatus: {razvedjson["payload"]["status"]}\ndatetime_start: {razvedjson["payload"]["datetime_start"]}\ndatetime_end: {razvedjson["payload"]["datetime_end"]}\nresponsible_uid: {razvedjson["payload"]["responsible_uid"]}\ncreated_at: {razvedjson["payload"]["created_at"]}\nupdated_at: {razvedjson["payload"]["updated_at"]}\npresence: {razvedjson["payload"]["presence"]}\nparent_event_id: {razvedjson["payload"]["parent_event_id"]}\nplace_type: {razvedjson["payload"]["place_type"]}\nurl: {razvedjson["payload"]["url"]}\nroom: {razvedjson["payload"]["room"]}\nroom_id: {razvedjson["payload"]["room_id"]}\naddress: {razvedjson["payload"]["address"]}\nresult: {razvedjson["payload"]["result"]}\naudience: {razvedjson["payload"]["audience"]}\nud_type: {razvedjson["payload"]["ud_type"]}\noptions: {razvedjson["payload"]["options"]}\nview_access: {razvedjson["payload"]["view_access"]}\neventCalendar: {razvedjson["payload"]["eventCalendar"]}\ninviteList: {razvedjson["payload"]["inviteList"]}\npv_shooting_required: {razvedjson["payload"]["pv_shooting_required"]}\ntech_spec_required: {razvedjson["payload"]["tech_spec_required"]}\nowner: {razvedjson["payload"]["owner"]}\nplace_value: {razvedjson["payload"]["place_value"]}\npeople: {razvedjson["payload"]["responsible"]}\n\n")
+                print(f"{min} готов")
+            else:
+                print(f"{min} нету")
+            min += 1
+        f.close()
+    print("Готово!")
+    time.sleep(2)
+    os.system('cls' if os.name == 'nt' else 'clear')
+    menu()
 
 # вызов функции интерфейса, начало работы
 login_password()
