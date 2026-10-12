@@ -70,7 +70,7 @@ def reg(login_val, password_val):
 
 
 # функция создания календаря
-def newcal(title="Новое событие", canEdit=True, description="Описание события", calendar_id="1220",
+def newcal(title="Новое событие", canEdit=True, description="Описание события", calendar_id="99999999",
            datetime_start="2026-10-31 09:00:00", datetime_end="2026-10-31 10:00:00", presence="at_will",
            place_type="school", place_value="", status="published"):
     data = {
@@ -151,7 +151,7 @@ def menu():
             calendar_scan()
         elif go == "3":
             os.system('cls' if os.name == 'nt' else 'clear')
-            break
+            calendar_go()
         elif go == "4":
             os.system('cls' if os.name == 'nt' else 'clear')
             break
@@ -198,15 +198,43 @@ def calendar_scan():
     reg(login, password)
     with open(log_file, "w", encoding="utf-8", errors="ignore") as f:
         while min <= max:
-            razvedjson = json.loads(razved_cal(min))
-            if razvedjson != {'result': False, 'error': 'Событие не найдено', 'formErrors': None}:
-                razvedjson = razvedjson["result"][str(min)]
-                f.write(f"{min}:\nheader: {razvedjson["header"]}\ntitle: {razvedjson["title"]}\naudience: {razvedjson["audience"]}\ncorner: {razvedjson["corner"]}\ncolor: {razvedjson["color"]}\ncanEdit: {razvedjson["features"]["canEdit"]}\nlabel: {razvedjson["label"]}\ncalendar_id: {razvedjson["payload"]["calendar_id"]}\ntitle_payload: {razvedjson["payload"]["title"]}\ndescription: {razvedjson["payload"]["description"]}\nowner_uid: {razvedjson["payload"]["owner_uid"]}\nstatus: {razvedjson["payload"]["status"]}\ndatetime_start: {razvedjson["payload"]["datetime_start"]}\ndatetime_end: {razvedjson["payload"]["datetime_end"]}\nresponsible_uid: {razvedjson["payload"]["responsible_uid"]}\ncreated_at: {razvedjson["payload"]["created_at"]}\nupdated_at: {razvedjson["payload"]["updated_at"]}\npresence: {razvedjson["payload"]["presence"]}\nparent_event_id: {razvedjson["payload"]["parent_event_id"]}\nplace_type: {razvedjson["payload"]["place_type"]}\nurl: {razvedjson["payload"]["url"]}\nroom: {razvedjson["payload"]["room"]}\nroom_id: {razvedjson["payload"]["room_id"]}\naddress: {razvedjson["payload"]["address"]}\nresult: {razvedjson["payload"]["result"]}\naudience: {razvedjson["payload"]["audience"]}\nud_type: {razvedjson["payload"]["ud_type"]}\noptions: {razvedjson["payload"]["options"]}\nview_access: {razvedjson["payload"]["view_access"]}\neventCalendar: {razvedjson["payload"]["eventCalendar"]}\ninviteList: {razvedjson["payload"]["inviteList"]}\npv_shooting_required: {razvedjson["payload"]["pv_shooting_required"]}\ntech_spec_required: {razvedjson["payload"]["tech_spec_required"]}\nowner: {razvedjson["payload"]["owner"]}\nplace_value: {razvedjson["payload"]["place_value"]}\npeople: {razvedjson["payload"]["responsible"]}\n\n")
-                print(f"{min} готов")
-            else:
-                print(f"{min} нету")
+            try:
+                razvedjson = json.loads(str(razved_cal(min)))
+                if razvedjson != {'result': False, 'error': 'Событие не найдено', 'formErrors': None}:
+                    razvedjson = razvedjson["result"][str(min)]
+                    f.write(f"{min}:\nheader: {razvedjson["header"]}\ntitle: {razvedjson["title"]}\naudience: {razvedjson["audience"]}\ncorner: {razvedjson["corner"]}\ncolor: {razvedjson["color"]}\ncanEdit: {razvedjson["features"]["canEdit"]}\nlabel: {razvedjson["label"]}\ncalendar_id: {razvedjson["payload"]["calendar_id"]}\ntitle_payload: {razvedjson["payload"]["title"]}\ndescription: {razvedjson["payload"]["description"]}\nowner_uid: {razvedjson["payload"]["owner_uid"]}\nstatus: {razvedjson["payload"]["status"]}\ndatetime_start: {razvedjson["payload"]["datetime_start"]}\ndatetime_end: {razvedjson["payload"]["datetime_end"]}\nresponsible_uid: {razvedjson["payload"]["responsible_uid"]}\ncreated_at: {razvedjson["payload"]["created_at"]}\nupdated_at: {razvedjson["payload"]["updated_at"]}\npresence: {razvedjson["payload"]["presence"]}\nparent_event_id: {razvedjson["payload"]["parent_event_id"]}\nplace_type: {razvedjson["payload"]["place_type"]}\nurl: {razvedjson["payload"]["url"]}\nroom: {razvedjson["payload"]["room"]}\nroom_id: {razvedjson["payload"]["room_id"]}\naddress: {razvedjson["payload"]["address"]}\nresult: {razvedjson["payload"]["result"]}\naudience: {razvedjson["payload"]["audience"]}\nud_type: {razvedjson["payload"]["ud_type"]}\noptions: {razvedjson["payload"]["options"]}\nview_access: {razvedjson["payload"]["view_access"]}\neventCalendar: {razvedjson["payload"]["eventCalendar"]}\ninviteList: {razvedjson["payload"]["inviteList"]}\npv_shooting_required: {razvedjson["payload"]["pv_shooting_required"]}\ntech_spec_required: {razvedjson["payload"]["tech_spec_required"]}\nowner: {razvedjson["payload"]["owner"]}\nplace_value: {razvedjson["payload"]["place_value"]}\npeople: {razvedjson["payload"]["responsible"]}\n\n")
+                    print(f"{min} готов")
+                else:
+                    print(f"{min} нету")
+            except json.decoder.JSONDecodeError:
+                f.write(f"{razved_cal(min)}\n\n")
+                print(f"{min} неподлежит обработке, записан полный json")
             min += 1
         f.close()
+    print("Готово!")
+    time.sleep(2)
+    os.system('cls' if os.name == 'nt' else 'clear')
+    menu()
+
+def calendar_go():
+    print(logo)
+    print("\n                  Вы выбрали calendar boom\n")
+    date_start = input("date_start(данные тип: 2000-12-31 23:59:59)>>  ")
+    date_end = input("date_end(данные типа: 2000-12-31 23:59:59)>>  ")
+    title = input("title>>  ")
+    canEdit = input("canEdit(да или нет)>>  ")
+    description = input("description>>  ")
+    calendar_id = input("calendar_id>>  ")
+    presence = input("presence>>  ")
+    place_type = input("place_type>>  ")
+    place_value = input("place_value>>  ")
+    status = input("status>>  ")
+    N = int(input("N>>  "))
+    reg(login, password)
+    g = 1
+    while g <= N:
+        print(f"Созданно событие {g}:\n{newcal(title=title, canEdit=True if canEdit == "да" else False, description=description, calendar_id=calendar_id, datetime_start=date_start, datetime_end=date_end, presence=presence, place_type=place_type, place_value=place_value, status=status)}\n")
+        g += 1
     print("Готово!")
     time.sleep(2)
     os.system('cls' if os.name == 'nt' else 'clear')
