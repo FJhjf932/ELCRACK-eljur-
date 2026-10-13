@@ -215,7 +215,8 @@ def calendar_scan():
     time.sleep(2)
     os.system('cls' if os.name == 'nt' else 'clear')
     menu()
-
+    
+# функция интерфейса для публикации календарей
 def calendar_go():
     print(logo)
     print("\n                  Вы выбрали calendar boom\n")
@@ -240,6 +241,7 @@ def calendar_go():
     os.system('cls' if os.name == 'nt' else 'clear')
     menu()
 
+# функция интерфейса для перебора паролей
 def brute_online():
     gg_stabilizator = False
     print(logo)
